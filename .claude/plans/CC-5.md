@@ -26,9 +26,8 @@ functions and their Gemini function declarations.
 ### Phase 2: Vault reader functions
 Build the three Python functions that read and parse the Obsidian vault markdown files into structured data. This is pure parsing logic with no Gemini dependency, so it can be tested and committed independently.
 
-- [ ] Create `src/tools/__init__.py`
-- [ ] Write `src/tools/vault_reader.py` with `read_pantry()`, `read_preferences()`, and `read_cocktail_log()` — each reads from `OBSIDIAN_VAULT_PATH`, parses the markdown, and returns a typed dict
-- [ ] Add module and function docstrings to all functions
+- [X] Write `src/tools/vault_reader.py` with `read_pantry()`, `read_preferences()`, and `read_cocktail_log()` — each reads from `OBSIDIAN_VAULT_PATH`, parses the markdown, and returns a typed dict
+- [X] Add module and function docstrings to all functions
 
 **Commit message:**
 ```
