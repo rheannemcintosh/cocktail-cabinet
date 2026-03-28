@@ -26,12 +26,12 @@ project scaffold, config and CLI entry point, and vault templates.
 ### Phase 2: Project scaffold and tooling
 Initialise the project with uv so dependencies, Python version, and virtual environment are all managed in one place.
 
-- [ ] Run `uv init` to generate `pyproject.toml` and `.python-version`
-- [ ] Run `uv add google-genai python-dotenv` to add dependencies, generate `uv.lock`, and create `.venv`
-- [ ] Create `src/__init__.py`
-- [ ] Create `tests/` directory with a `.gitkeep` placeholder
-- [ ] Write `.env.example` with `GEMINI_API_KEY` and `OBSIDIAN_VAULT_PATH` placeholders
-- [ ] Ensure `.gitignore` covers `.env`, `.venv/`, `__pycache__/`, `*.pyc`, `.DS_Store`
+- [X] Run `uv init` to generate `pyproject.toml`, `.python-version` and `main.py`
+- [X] Run `uv add google-genai python-dotenv` to add dependencies, generate `uv.lock`, and create `.venv`
+- [X] Create `src/__init__.py`
+- [X] Create `tests/` directory with a `.gitkeep` placeholder
+- [X] Write `.env.example` with `GEMINI_API_KEY` and `OBSIDIAN_VAULT_PATH` placeholders
+- [X] Ensure `.gitignore` covers `.env`, `.venv/`, `__pycache__/`, `*.pyc`, `.DS_Store`
 
 **Commit message:**
 ```
