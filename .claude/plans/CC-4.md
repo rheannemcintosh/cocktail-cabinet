@@ -26,7 +26,7 @@ and writing unit and integration tests.
 ### Phase 2: Gemini client wrapper
 Create a thin wrapper around the google-genai SDK that initialises the client from config and exposes a `generate` function for sending prompts.
 
-- [ ] Write `src/gemini_client.py` — initialises `google.genai.Client` with `GEMINI_API_KEY`, exposes `generate(prompt: str) -> str` function, includes module and function docstrings
+- [X] Write `src/gemini_client.py` — initialises `google.genai.Client` with `GEMINI_API_KEY`, exposes `generate(prompt: str) -> str` function, includes module and function docstrings
 
 **Commit message:**
 ```
