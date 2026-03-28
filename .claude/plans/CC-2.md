@@ -61,21 +61,19 @@ Config loads required env vars with clear error messages. CLI parses
 [CC-2]
 ```
 
-### Phase 4: Vault templates and README
-Add the Obsidian vault template files and project README so users can get set up immediately.
+### Phase 4: Vault templates
+Add the Obsidian vault template files so users can get set up immediately.
 
-- [ ] Write `vault_templates/Pantry.md` — example ingredient inventory with category headings (spirits, liqueurs, mixers, juices, syrups, bitters, garnishes)
-- [ ] Write `vault_templates/Preferences.md` — example taste profile with likes/dislikes sections
-- [ ] Write `vault_templates/Cocktail Log.md` — example log with a sample rated entry
-- [ ] Write `vault_templates/Cocktail Suggestions.md` — example output file showing the expected suggestion format
-- [ ] Generate `README.md` using the readme-generator skill
+- [X] Write `vault_templates/Pantry.md` — example ingredient inventory with category headings (spirits, liqueurs, mixers, juices, syrups, bitters, garnishes)
+- [X] Write `vault_templates/Preferences.md` — example taste profile with likes/dislikes sections
+- [X] Write `vault_templates/Cocktail Log.md` — example log with a sample rated entry
+- [X] Write `vault_templates/Cocktail Suggestions.md` — example output file showing the expected suggestion format
 
 **Commit message:**
 ```
-docs: add vault templates and README
+docs: add vault templates
 
 Obsidian vault template files give users a ready-to-go setup.
-README documents installation, configuration, and usage.
 
 [CC-2]
 ```
