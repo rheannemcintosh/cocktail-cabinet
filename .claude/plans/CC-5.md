@@ -59,8 +59,8 @@ generate_content calls.
 ### Phase 4: Tests
 Write tests for the parsing logic and the function declaration structure.
 
-- [ ] Write `tests/test_vault_reader.py` — unit tests for each reader function using fixture markdown files, asserting correct structure and values are returned
-- [ ] Write `tests/test_declarations.py` — asserts that `VAULT_READER_TOOLS` contains the correct number of declarations and that each has a name and description
+- [X] Write `tests/test_vault_reader.py` — unit tests for each reader function using fixture markdown files, asserting correct structure and values are returned
+- [X] Write `tests/test_declarations.py` — asserts that `VAULT_READER_TOOLS` contains the correct number of declarations and that each has a name and description
 
 **Commit message:**
 ```
