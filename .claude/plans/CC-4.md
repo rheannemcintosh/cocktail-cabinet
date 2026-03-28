@@ -41,8 +41,8 @@ from config and exposes a generate() function for sending prompts.
 ### Phase 3: Add test dependencies
 Add pytest and pytest-mock as dev dependencies via uv so tests can be run before any implementation is committed.
 
-- [ ] Run `uv add --dev pytest pytest-mock` to add test dependencies
-- [ ] Verify `uv run pytest` runs without errors on the empty test suite
+- [X] Run `uv add --dev pytest pytest-mock` to add test dependencies
+- [X] Verify `uv run pytest` runs without errors on the empty test suite
 
 **Commit message:**
 ```
