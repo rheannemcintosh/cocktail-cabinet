@@ -42,8 +42,8 @@ likes/dislikes lists, and Cocktail Log.md into rated cocktail entries.
 ### Phase 3: Gemini function declarations
 Define each vault reader as a Gemini function declaration so the LLM can call them as tools during a conversation. Register all three as a tools list ready to be passed to `generate_content`.
 
-- [ ] Write `src/tools/declarations.py` — defines a `FunctionDeclaration` for each vault reader function and exports a `VAULT_READER_TOOLS` list
-- [ ] Add module docstring explaining the tool calling pattern
+- [X] Write `src/tools/declarations.py` — defines a `FunctionDeclaration` for each vault reader function and exports a `VAULT_READER_TOOLS` list
+- [X] Add module docstring explaining the tool calling pattern
 
 **Commit message:**
 ```
