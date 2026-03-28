@@ -57,8 +57,10 @@ of the branch.
 ### Phase 4: Tests
 Write unit tests with mocked SDK calls and an integration test that makes a live call and skips if `GEMINI_API_KEY` is not set.
 
-- [ ] Write `tests/test_gemini_client.py` — unit test mocking `google.genai.Client` to verify `generate()` sends the prompt and returns the response text
-- [ ] Add an integration test marked with `pytest.mark.skipif` that calls the live API and asserts a non-empty string response
+- [X] Add `pythonpath = ["."]` to `[tool.pytest.ini_options]` in `pyproject.toml` so `src` is resolvable during tests
+- [X] Write `tests/conftest.py` — loads `.env` first via `load_dotenv()`, then falls back to test placeholders so `config.py` does not raise on missing vars during unit tests
+- [X] Write `tests/test_gemini_client.py` — unit test mocking `google.genai.Client` to verify `generate()` sends the prompt and returns the response text
+- [X] Add an integration test marked with `pytest.mark.skipif` that calls the live API and asserts a non-empty string response, skipping if `GEMINI_API_KEY` is the test placeholder or unset
 
 **Commit message:**
 ```
@@ -66,6 +68,7 @@ test: add unit and integration tests for Gemini client
 
 Unit test mocks the SDK to verify prompt handling. Integration test
 calls the live API and skips automatically if GEMINI_API_KEY is unset.
+Includes conftest.py to handle env var loading and test placeholders.
 
 [CC-4]
 ```
