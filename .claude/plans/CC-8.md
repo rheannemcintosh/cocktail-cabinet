@@ -42,12 +42,12 @@ structured flavour profile to use as context in recipe generation.
 ### Phase 3: Orchestrator
 Build `src/orchestrator.py` with a `run(mood: str) -> str` function that executes the full four-step chain. Each step's output is passed into the next as context.
 
-- [ ] Write `src/orchestrator.py` with `run(mood: str) -> str`:
+- [X] Write `src/orchestrator.py` with `run(mood: str) -> str`:
   - Step 1: Call `read_pantry()`, `read_preferences()`, `read_cocktail_log()`
   - Step 2: Call `map_mood_to_flavour(mood)` to get flavour profile
   - Step 3: Assemble a structured context string from pantry, preferences, log, and flavour profile
   - Step 4: Send context to Gemini with a recipe generation prompt, return the response
-- [ ] Add module and function docstrings
+- [X] Add module and function docstrings
 
 **Commit message:**
 ```
