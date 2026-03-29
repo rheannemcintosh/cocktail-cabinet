@@ -63,9 +63,9 @@ ready to be written to the vault.
 ### Phase 4: Wire up CLI and tests
 Connect the orchestrator to `main.py` so the CLI produces real output, and write tests covering the chain logic with mocked Gemini calls.
 
-- [ ] Update `src/main.py` to call `orchestrator.run(args.mood)` and print the result
-- [ ] Write `tests/test_mood.py` — unit test mocking `generate()` to assert the prompt contains the mood and the response is parsed into a dict
-- [ ] Write `tests/test_orchestrator.py` — unit tests mocking vault readers and `generate()` to assert the chain calls each step in order and passes output into context
+- [X] Update `src/main.py` to call `orchestrator.run(args.mood)` and print the result
+- [X] Write `tests/test_mood.py` — unit test mocking `generate()` to assert the prompt contains the mood and the response is parsed into a dict
+- [X] Write `tests/test_orchestrator.py` — unit tests mocking vault readers and `generate()` to assert the chain calls each step in order and passes output into context
 
 **Commit message:**
 ```
