@@ -44,9 +44,9 @@ to Cocktail Log.md.
 ### Phase 3: Gemini function declarations
 Register both writer functions as Gemini FunctionDeclarations and add them to the existing VAULT_READER_TOOL in declarations.py, so all vault tools are available in a single Tool object.
 
-- [ ] Add `write_suggestion_declaration` and `write_to_log_declaration` to `src/tools/declarations.py` using `FunctionDeclaration.from_callable()`
-- [ ] Combine all five declarations into a single `VAULT_TOOLS` list, replacing the existing `VAULT_READER_TOOL`
-- [ ] Update the module docstring to reflect the expanded tool set
+- [X] Add `write_suggestion_declaration` and `write_to_log_declaration` to `src/tools/declarations.py` using `FunctionDeclaration.from_callable()`
+- [X] Combine all five declarations into a single `VAULT_TOOLS` list, replacing the existing `VAULT_READER_TOOL`
+- [X] Update the module docstring to reflect the expanded tool set
 
 **Commit message:**
 ```
