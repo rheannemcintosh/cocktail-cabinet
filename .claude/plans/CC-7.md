@@ -60,9 +60,9 @@ to VAULT_TOOLS.
 ### Phase 4: Tests
 Write tests for the categoriser and the updated read_pantry behaviour, using mocks to avoid live Gemini calls in unit tests.
 
-- [ ] Write `tests/test_categoriser.py` — unit test mocking `generate()` to assert `categorise_pantry()` sends a prompt containing the ingredients and correctly parses the response into a category dict
-- [ ] Update `tests/test_vault_reader.py` — add a test that provides a Pantry.md with an `## Uncategorised` section and asserts `read_pantry()` calls `categorise_pantry()` and rewrites the file
-- [ ] Update `tests/test_declarations.py` — assert `VAULT_TOOLS` now contains six declarations
+- [X] Write `tests/test_categoriser.py` — unit test mocking `generate()` to assert `categorise_pantry()` sends a prompt containing the ingredients and correctly parses the response into a category dict
+- [X] Update `tests/test_vault_reader.py` — add a test that provides a Pantry.md with an `## Uncategorised` section and asserts `read_pantry()` calls `categorise_pantry()` and rewrites the file
+- [X] Update `tests/test_declarations.py` — assert `VAULT_TOOLS` now contains six declarations
 
 **Commit message:**
 ```
