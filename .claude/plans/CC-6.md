@@ -26,9 +26,9 @@ functions and their Gemini function declarations.
 ### Phase 2: Vault writer functions
 Build the two Python functions that write output back to the Obsidian vault. This is pure file I/O with no Gemini dependency, committed independently before the declarations.
 
-- [ ] Write `src/tools/vault_writer.py` with `write_suggestion(content: str)` — overwrites `Cocktail Suggestions.md` with formatted markdown including recipe, missing ingredients with accessibility tiers, and a rating prompt
-- [ ] Write `write_to_log(cocktail: str, rating: int, notes: str = "")` — appends a dated entry to `Cocktail Log.md`
-- [ ] Add module and function docstrings
+- [X] Write `src/tools/vault_writer.py` with `write_suggestion(content: str)` — overwrites `Cocktail Suggestions.md` with formatted markdown including recipe, missing ingredients with accessibility tiers, and a rating prompt
+- [X] Write `write_to_log(cocktail: str, rating: int, notes: str = "")` — appends a dated entry to `Cocktail Log.md`
+- [X] Add module and function docstrings
 
 **Commit message:**
 ```
