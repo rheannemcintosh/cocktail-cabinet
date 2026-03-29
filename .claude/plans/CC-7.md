@@ -27,8 +27,8 @@ read_pantry integration.
 ### Phase 2: Categoriser function
 Build `categorise_pantry()` in its own module — a focused Gemini prompt call that takes a flat ingredient list and returns a structured dict. Committed independently before it is wired into the vault reader.
 
-- [ ] Write `src/tools/categoriser.py` with `categorise_pantry(items: list[str]) -> dict[str, list[str]]` — builds a prompt, calls `generate()` from `gemini_client`, parses the JSON response into the expected category structure (spirits, liqueurs, mixers, juices, syrups, bitters, garnishes, other)
-- [ ] Add module and function docstrings
+- [X] Write `src/tools/categoriser.py` with `categorise_pantry(items: list[str]) -> dict[str, list[str]]` — builds a prompt, calls `generate()` from `gemini_client`, parses the JSON response into the expected category structure (spirits, liqueurs, mixers, juices, syrups, bitters, garnishes, other)
+- [X] Add module and function docstrings
 
 **Commit message:**
 ```
