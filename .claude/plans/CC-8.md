@@ -26,8 +26,8 @@ chain, mood-to-flavour mapping, context assembly, and CLI wiring.
 ### Phase 2: Mood-to-flavour mapping
 Build the first Gemini prompt in the chain — a focused step that maps a free-text mood to a structured flavour profile. Committed independently so it can be tested in isolation before the full chain is assembled.
 
-- [ ] Write `src/mood.py` with `map_mood_to_flavour(mood: str) -> dict` — sends a prompt to Gemini asking it to return a JSON flavour profile (e.g. preferred spirit types, flavour notes, style) for the given mood
-- [ ] Add module and function docstrings
+- [X] Write `src/mood.py` with `map_mood_to_flavour(mood: str) -> dict` — sends a prompt to Gemini asking it to return a JSON flavour profile (e.g. preferred spirit types, flavour notes, style) for the given mood
+- [X] Add module and function docstrings
 
 **Commit message:**
 ```
