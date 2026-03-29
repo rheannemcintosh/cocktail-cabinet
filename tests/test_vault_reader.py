@@ -6,6 +6,7 @@ Obsidian vault configured.
 """
 import pytest
 
+import src.tools.categoriser as categoriser_module
 import src.tools.vault_reader as vault_reader
 
 
@@ -35,6 +36,36 @@ class TestReadPantry:
         monkeypatch.setattr(vault_reader, "OBSIDIAN_VAULT_PATH", "/nonexistent")
         with pytest.raises(FileNotFoundError):
             vault_reader.read_pantry()
+
+    def test_auto_categorises_uncategorised_section(self, tmp_path, monkeypatch):
+        (tmp_path / "Pantry.md").write_text(
+            "# Pantry\n\n## Spirits\n- Gin\n\n## Uncategorised\n- Angostura bitters\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(vault_reader, "OBSIDIAN_VAULT_PATH", str(tmp_path))
+        mocker_patch = monkeypatch.setattr(
+            categoriser_module, "generate",
+            lambda _: '{"bitters": ["Angostura bitters"]}'
+        )
+        result = vault_reader.read_pantry()
+        assert "Uncategorised" not in result
+        assert "Bitters" in result
+        assert "Angostura bitters" in result["Bitters"]
+
+    def test_rewrites_pantry_after_categorisation(self, tmp_path, monkeypatch):
+        (tmp_path / "Pantry.md").write_text(
+            "# Pantry\n\n## Uncategorised\n- Gin\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(vault_reader, "OBSIDIAN_VAULT_PATH", str(tmp_path))
+        monkeypatch.setattr(
+            categoriser_module, "generate",
+            lambda _: '{"spirits": ["Gin"]}'
+        )
+        vault_reader.read_pantry()
+        rewritten = (tmp_path / "Pantry.md").read_text()
+        assert "## Spirits" in rewritten
+        assert "## Uncategorised" not in rewritten
 
 
 class TestReadPreferences:

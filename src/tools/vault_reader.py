@@ -5,8 +5,6 @@ Reads and parses the Obsidian vault markdown files into structured data.
 Each function corresponds to a Gemini tool declaration in declarations.py,
 allowing the LLM to call them during a conversation.
 """
-import os
-import re
 from pathlib import Path
 
 from src.config import OBSIDIAN_VAULT_PATH
@@ -55,8 +53,28 @@ def _parse_sections(content: str) -> dict[str, list[str]]:
     return sections
 
 
+def _rewrite_pantry(categories: dict[str, list[str]]) -> None:
+    """Rewrite Pantry.md with a fully categorised structure.
+
+    Args:
+        categories: A dict of category name -> ingredient list.
+    """
+    lines = ["# Pantry", ""]
+    for category, items in categories.items():
+        if items:
+            lines.append(f"## {category}")
+            lines.extend(f"- {item}" for item in items)
+            lines.append("")
+    path = Path(OBSIDIAN_VAULT_PATH) / "Pantry.md"
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
 def read_pantry() -> dict[str, list[str]]:
     """Read and parse Pantry.md into categorised ingredients.
+
+    If an ## Uncategorised section is found, its items are sent to
+    Gemini via categorise_pantry(), merged with existing categories,
+    and Pantry.md is rewritten with the organised result.
 
     Returns:
         A dict with category names as keys and lists of ingredients
@@ -68,8 +86,23 @@ def read_pantry() -> dict[str, list[str]]:
                 ...
             }
     """
+    from src.tools.categoriser import categorise_pantry
+
     content = _read_file("Pantry.md")
-    return _parse_sections(content)
+    sections = _parse_sections(content)
+
+    uncategorised = sections.pop("Uncategorised", [])
+    if uncategorised:
+        categorised = categorise_pantry(uncategorised)
+        for category, items in categorised.items():
+            title_key = category.title()
+            existing = sections.setdefault(title_key, [])
+            for item in items:
+                if item not in existing:
+                    existing.append(item)
+        _rewrite_pantry(sections)
+
+    return sections
 
 
 def read_preferences() -> dict[str, list[str]]:

@@ -12,11 +12,12 @@ EXPECTED_FUNCTION_NAMES = {
     "read_cocktail_log",
     "write_suggestion",
     "write_to_log",
+    "categorise_pantry",
 }
 
 
-def test_vault_tools_has_five_declarations():
-    assert len(VAULT_TOOLS.function_declarations) == 5
+def test_vault_tools_has_six_declarations():
+    assert len(VAULT_TOOLS.function_declarations) == 6
 
 
 def test_all_declarations_have_names():
