@@ -26,11 +26,11 @@ the first specialist agent in the multi-agent planning pattern.
 ### Phase 2: Bartender agent
 Build the bartender agent with a system prompt and structured output. Using a system prompt with the Gemini SDK distinguishes this from the plain generate() calls in the orchestrator, making the multi-agent pattern clearly visible.
 
-- [ ] Write `src/agents/bartender.py` with `suggest(pantry: dict, flavour_profile: dict) -> list[dict]`
-- [ ] Define a `SYSTEM_PROMPT` constant that gives the agent its bartender persona, instructs it to rank suggestions by ingredient availability, and specifies the JSON output format
-- [ ] Use `client.chats.create(config=GenerateContentConfig(system_instruction=SYSTEM_PROMPT))` to initialise the agent with a system prompt
-- [ ] Parse the JSON response into a list of cocktail dicts, each with `name`, `ingredients` (list of `{name, in_pantry: bool}`), and `match_score` (int, ingredients in pantry / total ingredients)
-- [ ] Add module and function docstrings
+- [X] Write `src/agents/bartender.py` with `suggest(pantry: dict, flavour_profile: dict) -> list[dict]`
+- [X] Define a `SYSTEM_PROMPT` constant that gives the agent its bartender persona, instructs it to rank suggestions by ingredient availability, and specifies the JSON output format
+- [X] Use `client.chats.create(config=GenerateContentConfig(system_instruction=SYSTEM_PROMPT))` to initialise the agent with a system prompt
+- [X] Parse the JSON response into a list of cocktail dicts, each with `name`, `ingredients` (list of `{name, in_pantry: bool}`), and `match_score` (int, ingredients in pantry / total ingredients)
+- [X] Add module and function docstrings
 
 **Commit message:**
 ```
