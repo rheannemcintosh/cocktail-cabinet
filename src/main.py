@@ -17,14 +17,14 @@ def main() -> None:
     args = parser.parse_args()
 
     try:
-        from src.config import OBSIDIAN_VAULT_PATH
+        from src.config import GEMINI_API_KEY, OBSIDIAN_VAULT_PATH
     except EnvironmentError as e:
         print(f"Configuration error: {e}")
         raise SystemExit(1)
 
-    print(f"Finding cocktails for mood: {args.mood}")
-    print(f"Vault: {OBSIDIAN_VAULT_PATH}")
-    print("(Suggestions coming soon...)")
+    from src.orchestrator import run
+    result = run(args.mood)
+    print(result)
 
 
 if __name__ == "__main__":
