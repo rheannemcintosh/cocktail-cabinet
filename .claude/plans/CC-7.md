@@ -43,8 +43,8 @@ a structured dict of categories, enabling unstructured pantry input.
 ### Phase 3: Declaration and vault reader integration
 Register `categorise_pantry` as a Gemini FunctionDeclaration and update `read_pantry()` to auto-categorise and rewrite Pantry.md when an uncategorised section is detected.
 
-- [ ] Add `categorise_pantry_declaration` to `src/tools/declarations.py` and include it in `VAULT_TOOLS`
-- [ ] Update `read_pantry()` in `vault_reader.py` to detect an `## Uncategorised` section, call `categorise_pantry()` with those items, merge the result with existing categories, and rewrite Pantry.md
+- [X] Add `categorise_pantry_declaration` to `src/tools/declarations.py` and include it in `VAULT_TOOLS`
+- [X] Update `read_pantry()` in `vault_reader.py` to detect an `## Uncategorised` section, call `categorise_pantry()` with those items, merge the result with existing categories, and rewrite Pantry.md
 
 **Commit message:**
 ```

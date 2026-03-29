@@ -20,6 +20,7 @@ Usage::
 from google.genai.types import FunctionDeclaration, Tool
 
 from src.gemini_client import _client
+from src.tools.categoriser import categorise_pantry
 from src.tools.vault_reader import read_cocktail_log, read_pantry, read_preferences
 from src.tools.vault_writer import write_suggestion, write_to_log
 
@@ -48,6 +49,11 @@ write_to_log_declaration = FunctionDeclaration.from_callable(
     client=_client,
 )
 
+categorise_pantry_declaration = FunctionDeclaration.from_callable(
+    callable=categorise_pantry,
+    client=_client,
+)
+
 VAULT_TOOLS = Tool(
     function_declarations=[
         read_pantry_declaration,
@@ -55,5 +61,6 @@ VAULT_TOOLS = Tool(
         read_cocktail_log_declaration,
         write_suggestion_declaration,
         write_to_log_declaration,
+        categorise_pantry_declaration,
     ]
 )
