@@ -61,8 +61,8 @@ and consolidates all vault tools into a single VAULT_TOOLS export.
 ### Phase 4: Tests
 Write tests for the writer functions and updated declarations.
 
-- [ ] Write `tests/test_vault_writer.py` — tests for `write_suggestion()` asserting the file is created with correct content, and `write_to_log()` asserting the entry is appended with correct date, cocktail, rating, and notes
-- [ ] Update `tests/test_declarations.py` to assert `VAULT_TOOLS` now contains five declarations with the correct names
+- [X] Write `tests/test_vault_writer.py` — tests for `write_suggestion()` asserting the file is created with correct content, and `write_to_log()` asserting the entry is appended with correct date, cocktail, rating, and notes
+- [X] Update `tests/test_declarations.py` to assert `VAULT_TOOLS` now contains five declarations with the correct names
 
 **Commit message:**
 ```
