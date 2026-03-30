@@ -62,8 +62,8 @@ bartender agent, establishing the multi-agent handoff pattern.
 ### Phase 4: Tests
 Write tests for the bartender agent using mocked Gemini calls, and update the orchestrator test to reflect the new agent-based flow.
 
-- [ ] Write `tests/test_bartender.py` — unit tests mocking the Gemini chat to assert the system prompt is set, the pantry and flavour profile appear in the message, and the response is parsed into a correctly structured list
-- [ ] Update `tests/test_orchestrator.py` — replace the mocked `generate()` call with a mock of `bartender.suggest()` and assert it is called with the correct pantry and flavour profile
+- [X] Write `tests/test_bartender.py` — unit tests mocking the Gemini chat to assert the system prompt is set, the pantry and flavour profile appear in the message, and the response is parsed into a correctly structured list
+- [X] Update `tests/test_orchestrator.py` — replace the mocked `generate()` call with a mock of `bartender.suggest()` and assert it is called with the correct pantry and flavour profile
 
 **Commit message:**
 ```

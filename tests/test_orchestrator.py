@@ -1,97 +1,91 @@
 """
 Tests for the prompt orchestration chain.
 
-Mocks vault readers and Gemini calls to verify each step executes in
-order and passes its output into the next step's context.
+Mocks vault readers, mood mapping, and the bartender agent to verify
+each step executes in order and passes its output into the next.
 """
 import pytest
 
 import src.orchestrator as orchestrator_module
 from src.orchestrator import run
 
+MOCK_PANTRY = {"Spirits": ["Gin"], "Mixers": ["Tonic water"]}
+MOCK_PREFERENCES = {"I like": ["Citrusy"], "I dislike": ["Smoky"]}
+MOCK_LOG = [{"date": "2026-03-01", "cocktail": "Daiquiri", "rating": "5", "notes": "Perfect."}]
+MOCK_FLAVOUR_PROFILE = {
+    "flavour_notes": ["citrus", "light"],
+    "preferred_spirits": ["gin"],
+    "style": "long",
+    "avoid": ["smoky"],
+}
+MOCK_SUGGESTIONS = [
+    {
+        "name": "Gin & Tonic",
+        "ingredients": [
+            {"name": "Gin", "in_pantry": True},
+            {"name": "Tonic water", "in_pantry": True},
+        ],
+        "match_score": 1.0,
+    }
+]
+
 
 @pytest.fixture
 def mock_vault(mocker):
     """Mock all three vault reader functions."""
-    mocker.patch.object(
-        orchestrator_module,
-        "read_pantry",
-        return_value={"Spirits": ["Gin"], "Mixers": ["Tonic water"]},
-    )
-    mocker.patch.object(
-        orchestrator_module,
-        "read_preferences",
-        return_value={"I like": ["Citrusy"], "I dislike": ["Smoky"]},
-    )
-    mocker.patch.object(
-        orchestrator_module,
-        "read_cocktail_log",
-        return_value=[{"date": "2026-03-01", "cocktail": "Daiquiri", "rating": "5", "notes": "Perfect."}],
-    )
+    mocker.patch.object(orchestrator_module, "read_pantry", return_value=MOCK_PANTRY)
+    mocker.patch.object(orchestrator_module, "read_preferences", return_value=MOCK_PREFERENCES)
+    mocker.patch.object(orchestrator_module, "read_cocktail_log", return_value=MOCK_LOG)
 
 
 @pytest.fixture
 def mock_mood(mocker):
     """Mock map_mood_to_flavour to return a fixed flavour profile."""
     return mocker.patch.object(
-        orchestrator_module,
-        "map_mood_to_flavour",
-        return_value={
-            "flavour_notes": ["citrus", "light"],
-            "preferred_spirits": ["gin"],
-            "style": "long",
-            "avoid": ["smoky"],
-        },
+        orchestrator_module, "map_mood_to_flavour", return_value=MOCK_FLAVOUR_PROFILE
     )
 
 
 @pytest.fixture
-def mock_generate(mocker):
-    """Mock the final Gemini generate() call."""
+def mock_bartender(mocker):
+    """Mock bartender.suggest() to return fixed suggestions."""
     return mocker.patch.object(
-        orchestrator_module,
-        "generate",
-        return_value="# Cocktail Suggestions\n\nGin & Tonic — you have everything.",
+        orchestrator_module.bartender, "suggest", return_value=MOCK_SUGGESTIONS
     )
 
 
 class TestRun:
-    def test_calls_read_pantry(self, mock_vault, mock_mood, mock_generate):
+    def test_calls_read_pantry(self, mock_vault, mock_mood, mock_bartender):
         run("refreshing")
         orchestrator_module.read_pantry.assert_called_once()
 
-    def test_calls_read_preferences(self, mock_vault, mock_mood, mock_generate):
+    def test_calls_read_preferences(self, mock_vault, mock_mood, mock_bartender):
         run("refreshing")
         orchestrator_module.read_preferences.assert_called_once()
 
-    def test_calls_read_cocktail_log(self, mock_vault, mock_mood, mock_generate):
+    def test_calls_read_cocktail_log(self, mock_vault, mock_mood, mock_bartender):
         run("refreshing")
         orchestrator_module.read_cocktail_log.assert_called_once()
 
-    def test_calls_map_mood_to_flavour_with_mood(self, mock_vault, mock_mood, mock_generate):
+    def test_calls_map_mood_to_flavour_with_mood(self, mock_vault, mock_mood, mock_bartender):
         run("refreshing")
         orchestrator_module.map_mood_to_flavour.assert_called_once_with("refreshing")
 
-    def test_prompt_contains_pantry_context(self, mock_vault, mock_mood, mock_generate):
+    def test_calls_bartender_with_pantry_and_flavour_profile(self, mock_vault, mock_mood, mock_bartender):
         run("refreshing")
-        prompt = mock_generate.call_args[0][0]
-        assert "Gin" in prompt
+        orchestrator_module.bartender.suggest.assert_called_once_with(
+            MOCK_PANTRY, MOCK_FLAVOUR_PROFILE
+        )
 
-    def test_prompt_contains_preferences_context(self, mock_vault, mock_mood, mock_generate):
-        run("refreshing")
-        prompt = mock_generate.call_args[0][0]
-        assert "Citrusy" in prompt
-
-    def test_prompt_contains_cocktail_log_context(self, mock_vault, mock_mood, mock_generate):
-        run("refreshing")
-        prompt = mock_generate.call_args[0][0]
-        assert "Daiquiri" in prompt
-
-    def test_prompt_contains_mood(self, mock_vault, mock_mood, mock_generate):
-        run("refreshing")
-        prompt = mock_generate.call_args[0][0]
-        assert "refreshing" in prompt
-
-    def test_returns_generate_output(self, mock_vault, mock_mood, mock_generate):
+    def test_output_contains_cocktail_name(self, mock_vault, mock_mood, mock_bartender):
         result = run("refreshing")
-        assert result == "# Cocktail Suggestions\n\nGin & Tonic — you have everything."
+        assert "Gin & Tonic" in result
+
+    def test_output_contains_mood(self, mock_vault, mock_mood, mock_bartender):
+        result = run("refreshing")
+        assert "refreshing" in result
+
+    def test_output_is_markdown_string(self, mock_vault, mock_mood, mock_bartender):
+        result = run("refreshing")
+        assert isinstance(result, str)
+        assert result.startswith("# Cocktail Suggestions")
