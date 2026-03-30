@@ -46,8 +46,8 @@ agents to consume.
 ### Phase 3: Orchestrator integration
 Replace the current single generate() recipe step in the orchestrator with a call to the bartender agent, so the multi-agent pattern is wired into the main flow.
 
-- [ ] Update `src/orchestrator.py` to import and call `bartender.suggest(pantry, flavour_profile)` in place of the direct recipe generation prompt
-- [ ] Pass the bartender's structured output to `write_suggestion()` as formatted markdown
+- [X] Update `src/orchestrator.py` to import and call `bartender.suggest(pantry, flavour_profile)` in place of the direct recipe generation prompt
+- [X] Pass the bartender's structured output to `write_suggestion()` as formatted markdown
 
 **Commit message:**
 ```
