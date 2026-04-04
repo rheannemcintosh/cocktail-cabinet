@@ -27,6 +27,7 @@ def main() -> None:
     from src.tools.vault_writer import write_suggestion
 
     result = run(args.mood)
+    print("→ Writing up tonight's suggestions...")
     confirmation = write_suggestion(result)
     print(confirmation)
 

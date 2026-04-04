@@ -135,20 +135,27 @@ def run(mood: str) -> str:
         Formatted markdown suggestion text ready to write to the vault.
     """
     # Step 1: Read vault
+    print("→ Browsing what's in the pantry...")
     pantry = read_pantry()
+    print("→ Reminding myself what you like...")
     preferences = read_preferences()
+    print("→ Looking at what we've made before...")
     cocktail_log = read_cocktail_log()
 
     # Step 2: Map mood to flavour profile
+    print("→ Getting a feel for your mood...")
     flavour_profile = map_mood_to_flavour(mood)
 
     # Step 3: Bartender agent — ranked cocktail suggestions
+    print("→ Asking the bartender what they'd recommend...")
     suggestions = bartender.suggest(pantry, flavour_profile)
 
     # Step 4: Taste agent — filter disliked suggestions and boost by past ratings
+    print("→ Making sure you'll actually enjoy it...")
     suggestions = taste.filter_and_boost(suggestions, preferences, cocktail_log)
 
     # Step 5: Shopper agent — classify missing ingredients and rank stock-up list
+    print("→ Checking what you might need to pick up...")
     shopping = shopper.suggest(suggestions)
 
     # Step 6: Format for vault
@@ -167,4 +174,5 @@ def update_preferences() -> str:
     """
     preferences = read_preferences()
     cocktail_log = read_cocktail_log()
+    print("→ Learning from what you've rated before...")
     return taste.infer_and_update(cocktail_log, preferences)
