@@ -5,6 +5,7 @@ Reads and parses the Obsidian vault markdown files into structured data.
 Each function corresponds to a Gemini tool declaration in declarations.py,
 allowing the LLM to call them during a conversation.
 """
+import re
 from pathlib import Path
 
 from src.config import OBSIDIAN_VAULT_PATH
@@ -161,3 +162,26 @@ def read_cocktail_log() -> list[dict[str, str]]:
         entries.append(current)
 
     return entries
+
+
+def read_suggestions() -> list[str]:
+    """Read cocktail names from Cocktail Suggestions.md.
+
+    Parses the ### {n}. {name} headings, stripping the number, dot, and
+    any badge suffix (e.g. ⭐ Best match).
+
+    Returns:
+        A list of cocktail name strings in suggestion order. Returns an
+        empty list if the file is missing or contains no suggestion headings.
+    """
+    try:
+        content = _read_file("Cocktail Suggestions.md")
+    except FileNotFoundError:
+        return []
+
+    names = []
+    for line in content.splitlines():
+        match = re.match(r"^### \d+\.\s+(.+?)(?:\s+⭐.*)?$", line)
+        if match:
+            names.append(match.group(1).strip())
+    return names
