@@ -1,7 +1,7 @@
 """
 Tests for vault reader functions.
 
-Uses vault_templates/ as fixture data so tests run without a real
+Uses examples/ as fixture data so tests run without a real
 Obsidian vault configured.
 """
 import pytest
@@ -12,8 +12,8 @@ import src.tools.vault_reader as vault_reader
 
 @pytest.fixture(autouse=True)
 def use_vault_templates(monkeypatch):
-    """Point the vault path at vault_templates/ for all tests in this module."""
-    monkeypatch.setattr(vault_reader, "OBSIDIAN_VAULT_PATH", "vault_templates")
+    """Point the vault path at examples/ for all tests in this module."""
+    monkeypatch.setattr(vault_reader, "OBSIDIAN_VAULT_PATH", "examples")
 
 
 class TestReadPantry:
