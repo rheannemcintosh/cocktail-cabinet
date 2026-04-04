@@ -145,3 +145,40 @@ class TestPromptToLog:
         mock_input = mocker.patch("builtins.input")
         main()
         mock_input.assert_not_called()
+
+
+class TestLogCommand:
+    def test_calls_write_to_log_with_correct_args(self, mocker):
+        mocker.patch("sys.argv", ["main", "--log", "Daiquiri", "--rating", "4"])
+        main()
+        import src.tools.vault_writer
+        src.tools.vault_writer.write_to_log.assert_called_once_with("Daiquiri", 4, "")
+
+    def test_passes_notes_to_write_to_log(self, mocker):
+        mocker.patch("sys.argv", ["main", "--log", "Daiquiri", "--rating", "4", "--notes", "Very smooth"])
+        main()
+        import src.tools.vault_writer
+        src.tools.vault_writer.write_to_log.assert_called_once_with("Daiquiri", 4, "Very smooth")
+
+    def test_does_not_call_orchestrator_run(self, mocker):
+        mocker.patch("sys.argv", ["main", "--log", "Daiquiri", "--rating", "4"])
+        main()
+        import src.orchestrator
+        src.orchestrator.run.assert_not_called()
+
+    def test_prints_log_confirmation(self, mocker, capsys):
+        mocker.patch("sys.argv", ["main", "--log", "Daiquiri", "--rating", "4"])
+        main()
+        assert MOCK_LOG_CONFIRMATION in capsys.readouterr().out
+
+    def test_missing_rating_exits_nonzero(self, mocker):
+        mocker.patch("sys.argv", ["main", "--log", "Daiquiri"])
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        assert exc_info.value.code != 0
+
+    def test_neither_mood_nor_log_exits_nonzero(self, mocker):
+        mocker.patch("sys.argv", ["main"])
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        assert exc_info.value.code != 0
