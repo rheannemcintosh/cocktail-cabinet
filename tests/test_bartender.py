@@ -67,19 +67,19 @@ def mock_chat(mocker):
 class TestSuggest:
     def test_creates_chat_with_system_prompt(self, mock_chat):
         suggest(PANTRY, FLAVOUR_PROFILE)
-        call_kwargs = mock_chat.create.call_args[1]
+        call_kwargs = mock_chat.chats.create.call_args[1]
         system_instruction = call_kwargs["config"].system_instruction
         assert system_instruction == bartender_module.SYSTEM_PROMPT
 
     def test_message_contains_pantry_ingredients(self, mock_chat):
         suggest(PANTRY, FLAVOUR_PROFILE)
-        message = mock_chat.create.return_value.send_message.call_args[0][0]
+        message = mock_chat.chats.create.return_value.send_message.call_args[0][0]
         assert "Gin" in message
         assert "White rum" in message
 
     def test_message_contains_flavour_profile(self, mock_chat):
         suggest(PANTRY, FLAVOUR_PROFILE)
-        message = mock_chat.create.return_value.send_message.call_args[0][0]
+        message = mock_chat.chats.create.return_value.send_message.call_args[0][0]
         assert "citrus" in message
 
     def test_returns_list_of_suggestions(self, mock_chat):
@@ -100,6 +100,6 @@ class TestSuggest:
         assert scores == sorted(scores, reverse=True)
 
     def test_raises_value_error_on_unparseable_response(self, mock_chat):
-        mock_chat.create.return_value.send_message.return_value.text = "Sorry, I cannot help."
+        mock_chat.chats.create.return_value.send_message.return_value.text = "Sorry, I cannot help."
         with pytest.raises(ValueError):
             suggest(PANTRY, FLAVOUR_PROFILE)
