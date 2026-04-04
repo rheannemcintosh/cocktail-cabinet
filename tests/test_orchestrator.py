@@ -168,6 +168,46 @@ class TestRunProgressLogging:
         assert "Checking what you might need to pick up" in capsys.readouterr().out
 
 
+class TestVerboseMode:
+    def test_verbose_prints_mood(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing", verbose=True)
+        assert "refreshing" in capsys.readouterr().out
+
+    def test_verbose_prints_flavour_notes(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing", verbose=True)
+        assert "citrus" in capsys.readouterr().out
+
+    def test_verbose_prints_suggestion_count(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing", verbose=True)
+        assert "bartender returned" in capsys.readouterr().out
+
+    def test_verbose_prints_filtered_count(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing", verbose=True)
+        assert "kept" in capsys.readouterr().out
+
+    def test_verbose_prints_shopping_tiers(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing", verbose=True)
+        assert "tier 1" in capsys.readouterr().out
+
+    def test_non_verbose_omits_mood_detail(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing", verbose=False)
+        assert "flavour notes" not in capsys.readouterr().out
+
+    def test_non_verbose_omits_suggestion_count(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing", verbose=False)
+        assert "bartender returned" not in capsys.readouterr().out
+
+    def test_update_preferences_verbose_prints_log_count(self, mock_vault, mocker, capsys):
+        mocker.patch.object(orchestrator_module.taste, "infer_and_update", return_value="")
+        update_preferences(verbose=True)
+        assert "cocktail log entry" in capsys.readouterr().out
+
+    def test_update_preferences_non_verbose_omits_log_count(self, mock_vault, mocker, capsys):
+        mocker.patch.object(orchestrator_module.taste, "infer_and_update", return_value="")
+        update_preferences(verbose=False)
+        assert "cocktail log entry" not in capsys.readouterr().out
+
+
 class TestUpdatePreferences:
     @pytest.fixture
     def mock_infer(self, mocker):
