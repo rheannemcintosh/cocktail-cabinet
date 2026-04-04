@@ -115,7 +115,7 @@ def _format_shopping_list(shopping: dict) -> str:
     return "\n".join(lines)
 
 
-def run(mood: str) -> str:
+def run(mood: str, verbose: bool = False) -> str:
     """Run the prompt orchestration chain and return cocktail suggestions.
 
     Executes the chain in sequence, passing each step's output into
@@ -130,6 +130,7 @@ def run(mood: str) -> str:
 
     Args:
         mood: A free-text mood description from the user, e.g. "refreshing".
+        verbose: If True, print key inputs and outputs at each agent boundary.
 
     Returns:
         Formatted markdown suggestion text ready to write to the vault.
@@ -145,29 +146,50 @@ def run(mood: str) -> str:
     # Step 2: Map mood to flavour profile
     print("→ Getting a feel for your mood...")
     flavour_profile = map_mood_to_flavour(mood)
+    if verbose:
+        print(f"\033[90m  mood: {mood}")
+        for key, value in flavour_profile.items():
+            label = key.replace("_", " ")
+            values = ", ".join(value) if isinstance(value, list) else value
+            print(f"  {label}: {values}")
+        print("\033[0m", end="")
 
     # Step 3: Bartender agent — ranked cocktail suggestions
     print("→ Asking the bartender what they'd recommend...")
-    suggestions = bartender.suggest(pantry, flavour_profile)
+    raw_suggestions = bartender.suggest(pantry, flavour_profile)
+    if verbose:
+        print(f"\033[90m  bartender returned {len(raw_suggestions)} suggestion(s)\033[0m")
 
     # Step 4: Taste agent — filter disliked suggestions and boost by past ratings
     print("→ Making sure you'll actually enjoy it...")
-    suggestions = taste.filter_and_boost(suggestions, preferences, cocktail_log)
+    suggestions = taste.filter_and_boost(raw_suggestions, preferences, cocktail_log)
+    if verbose:
+        filtered = len(raw_suggestions) - len(suggestions)
+        print(f"\033[90m  {len(suggestions)} suggestion(s) kept, {filtered} filtered out\033[0m")
 
     # Step 5: Shopper agent — classify missing ingredients and rank stock-up list
     print("→ Checking what you might need to pick up...")
     shopping = shopper.suggest(suggestions)
+    if verbose:
+        print(
+            f"\033[90m  shopping: {len(shopping.get('tier_1', []))} tier 1, "
+            f"{len(shopping.get('tier_2', []))} tier 2, "
+            f"{len(shopping.get('tier_3', []))} tier 3 item(s)\033[0m"
+        )
 
     # Step 6: Format for vault
     return _format_suggestions(suggestions, mood) + "\n" + _format_shopping_list(shopping)
 
 
-def update_preferences() -> str:
+def update_preferences(verbose: bool = False) -> str:
     """Infer taste patterns from the cocktail log and update Preferences.md.
 
     Reads the current cocktail log and preferences from the vault, then
     calls the taste agent to identify patterns from ratings and merge any
     new inferences into Preferences.md.
+
+    Args:
+        verbose: If True, print the cocktail log entry count before inference.
 
     Returns:
         A summary string describing what was inferred and updated.
@@ -175,4 +197,6 @@ def update_preferences() -> str:
     preferences = read_preferences()
     cocktail_log = read_cocktail_log()
     print("→ Learning from what you've rated before...")
+    if verbose:
+        print(f"\033[90m  {len(cocktail_log)} cocktail log entry/entries to learn from\033[0m")
     return taste.infer_and_update(cocktail_log, preferences)

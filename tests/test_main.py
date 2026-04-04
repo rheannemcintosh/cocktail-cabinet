@@ -28,7 +28,19 @@ class TestMain:
         mocker.patch("sys.argv", ["main", "--mood", "refreshing"])
         main()
         import src.orchestrator
-        src.orchestrator.run.assert_called_once_with("refreshing")
+        src.orchestrator.run.assert_called_once_with("refreshing", verbose=False)
+
+    def test_passes_verbose_true_when_flag_set(self, mocker):
+        mocker.patch("sys.argv", ["main", "--mood", "refreshing", "--verbose"])
+        main()
+        import src.orchestrator
+        src.orchestrator.run.assert_called_once_with("refreshing", verbose=True)
+
+    def test_passes_verbose_false_by_default(self, mocker):
+        mocker.patch("sys.argv", ["main", "--mood", "refreshing"])
+        main()
+        import src.orchestrator
+        src.orchestrator.run.assert_called_once_with("refreshing", verbose=False)
 
     def test_passes_run_result_to_write_suggestion(self, mocker):
         mocker.patch("sys.argv", ["main", "--mood", "tropical"])
