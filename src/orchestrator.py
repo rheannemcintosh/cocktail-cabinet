@@ -9,10 +9,11 @@ Chain:
     1. Read vault — pantry, preferences, cocktail log
     2. Map mood to flavour profile
     3. Pass pantry + flavour profile to the bartender agent
-    4. Format agent output as markdown for the vault
+    4. Pass bartender suggestions to the shopper agent
+    5. Format agent output as markdown for the vault
 """
 from src import agents
-from src.agents import bartender
+from src.agents import bartender, shopper
 from src.mood import map_mood_to_flavour
 from src.tools.vault_reader import read_cocktail_log, read_pantry, read_preferences
 
@@ -66,6 +67,53 @@ def _format_suggestions(suggestions: list[dict], mood: str) -> str:
     return "\n".join(lines)
 
 
+def _format_shopping_list(shopping: dict) -> str:
+    """Format the shopper agent's structured output as a markdown section.
+
+    Args:
+        shopping: Dict from shopper.suggest() with keys 'tier_1', 'tier_2',
+            'tier_3', and 'stock_up'.
+
+    Returns:
+        Formatted markdown string for the shopping list section.
+    """
+    lines = [
+        "---",
+        "",
+        "## Shopping list",
+        "",
+    ]
+
+    stock_up = shopping.get("stock_up", [])
+    if stock_up:
+        lines.append("### Stock up (any supermarket)")
+        lines.append("_These tier 1 items unlock the most recipes:_")
+        lines.append("")
+        for item in stock_up:
+            lines.append(f"- {item['name']} _(unlocks {item['recipes_unlocked']} recipe(s))_")
+        lines.append("")
+
+    tier_2 = shopping.get("tier_2", [])
+    if tier_2:
+        lines.append("### Larger supermarket")
+        for item in tier_2:
+            lines.append(f"- {item}")
+        lines.append("")
+
+    tier_3 = shopping.get("tier_3", [])
+    if tier_3:
+        lines.append("### Specialist store")
+        for item in tier_3:
+            lines.append(f"- {item}")
+        lines.append("")
+
+    if not stock_up and not tier_2 and not tier_3:
+        lines.append("_Nothing to buy — you have everything you need._")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
 def run(mood: str) -> str:
     """Run the prompt orchestration chain and return cocktail suggestions.
 
@@ -75,7 +123,8 @@ def run(mood: str) -> str:
     1. Read pantry, preferences, and cocktail log from the vault.
     2. Map the mood to a structured flavour profile via Gemini.
     3. Pass pantry and flavour profile to the bartender agent.
-    4. Format the agent's structured output as markdown.
+    4. Pass bartender suggestions to the shopper agent.
+    5. Format the agents' structured output as markdown.
 
     Args:
         mood: A free-text mood description from the user, e.g. "refreshing".
@@ -94,5 +143,8 @@ def run(mood: str) -> str:
     # Step 3: Bartender agent — ranked cocktail suggestions
     suggestions = bartender.suggest(pantry, flavour_profile)
 
-    # Step 4: Format for vault
-    return _format_suggestions(suggestions, mood)
+    # Step 4: Shopper agent — classify missing ingredients and rank stock-up list
+    shopping = shopper.suggest(suggestions)
+
+    # Step 5: Format for vault
+    return _format_suggestions(suggestions, mood) + "\n" + _format_shopping_list(shopping)
