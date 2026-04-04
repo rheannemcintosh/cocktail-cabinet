@@ -138,6 +138,36 @@ class TestRun:
         assert result.startswith("# Cocktail Suggestions")
 
 
+class TestRunProgressLogging:
+    def test_prints_pantry_step(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing")
+        assert "Browsing what's in the pantry" in capsys.readouterr().out
+
+    def test_prints_preferences_step(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing")
+        assert "Reminding myself what you like" in capsys.readouterr().out
+
+    def test_prints_cocktail_log_step(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing")
+        assert "Looking at what we've made before" in capsys.readouterr().out
+
+    def test_prints_mood_step(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing")
+        assert "Getting a feel for your mood" in capsys.readouterr().out
+
+    def test_prints_bartender_step(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing")
+        assert "Asking the bartender what they'd recommend" in capsys.readouterr().out
+
+    def test_prints_taste_step(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing")
+        assert "Making sure you'll actually enjoy it" in capsys.readouterr().out
+
+    def test_prints_shopper_step(self, mock_vault, mock_mood, mock_bartender, mock_taste, mock_shopper, capsys):
+        run("refreshing")
+        assert "Checking what you might need to pick up" in capsys.readouterr().out
+
+
 class TestUpdatePreferences:
     @pytest.fixture
     def mock_infer(self, mocker):
@@ -162,3 +192,7 @@ class TestUpdatePreferences:
     def test_returns_summary_from_taste_agent(self, mock_vault, mock_infer):
         result = update_preferences()
         assert result == "Preferences updated."
+
+    def test_prints_preference_update_step(self, mock_vault, mock_infer, capsys):
+        update_preferences()
+        assert "Learning from what you've rated before" in capsys.readouterr().out
