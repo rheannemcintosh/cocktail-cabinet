@@ -42,6 +42,44 @@ def write_suggestion(content: str) -> str:
     return f"Cocktail suggestions written to {path}"
 
 
+def write_preferences(preferences: dict[str, list[str]]) -> str:
+    """Overwrite the sections of Preferences.md with updated preferences.
+
+    Preserves the file header (everything before the first ## section)
+    and rewrites each section from the preferences dict. Sections are
+    written in the order provided.
+
+    Args:
+        preferences: Dict mapping section name to list of items, e.g.
+            {"I like": ["Citrusy"], "I dislike": ["Smoky"]}.
+
+    Returns:
+        A confirmation message indicating the file was updated.
+
+    Raises:
+        FileNotFoundError: If Preferences.md does not exist in the vault.
+    """
+    path = _vault_path("Preferences.md")
+    if not path.exists():
+        raise FileNotFoundError(
+            f"Could not find 'Preferences.md' in vault at {OBSIDIAN_VAULT_PATH}. "
+            f"Copy the file from vault_templates/ into your vault."
+        )
+
+    existing = path.read_text(encoding="utf-8")
+    first_section = existing.find("\n## ")
+    header = existing[:first_section + 1] if first_section != -1 else existing
+
+    sections = []
+    for section_name, items in preferences.items():
+        lines = [f"## {section_name}"]
+        lines.extend(f"- {item}" for item in items)
+        sections.append("\n".join(lines))
+
+    path.write_text(header + "\n".join(sections) + "\n", encoding="utf-8")
+    return "Preferences updated in Preferences.md"
+
+
 def write_to_log(cocktail: str, rating: int, notes: str = "") -> str:
     """Append a rated cocktail entry to Cocktail Log.md.
 

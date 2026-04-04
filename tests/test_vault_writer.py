@@ -36,6 +36,57 @@ class TestWriteSuggestion:
         assert "Cocktail Suggestions" in result
 
 
+class TestWritePreferences:
+    PREFERENCES = {
+        "I like": ["Citrusy", "Refreshing"],
+        "I dislike": ["Smoky"],
+        "Preferred spirits": ["Gin"],
+    }
+    HEADER = "# Preferences\n\nEdit this file to personalise suggestions.\n\n"
+
+    @pytest.fixture(autouse=True)
+    def create_preferences_file(self, tmp_path):
+        """Create a minimal Preferences.md before each test."""
+        (tmp_path / "Preferences.md").write_text(
+            self.HEADER + "## I like\n- Old item\n",
+            encoding="utf-8",
+        )
+
+    def test_writes_sections_to_file(self, tmp_path):
+        vault_writer.write_preferences(self.PREFERENCES)
+        content = (tmp_path / "Preferences.md").read_text()
+        assert "## I like" in content
+        assert "## I dislike" in content
+        assert "## Preferred spirits" in content
+
+    def test_writes_items_under_sections(self, tmp_path):
+        vault_writer.write_preferences(self.PREFERENCES)
+        content = (tmp_path / "Preferences.md").read_text()
+        assert "- Citrusy" in content
+        assert "- Refreshing" in content
+        assert "- Smoky" in content
+        assert "- Gin" in content
+
+    def test_preserves_file_header(self, tmp_path):
+        vault_writer.write_preferences(self.PREFERENCES)
+        content = (tmp_path / "Preferences.md").read_text()
+        assert content.startswith(self.HEADER)
+
+    def test_replaces_existing_section_content(self, tmp_path):
+        vault_writer.write_preferences(self.PREFERENCES)
+        content = (tmp_path / "Preferences.md").read_text()
+        assert "- Old item" not in content
+
+    def test_returns_confirmation_message(self):
+        result = vault_writer.write_preferences(self.PREFERENCES)
+        assert "Preferences" in result
+
+    def test_missing_file_raises_file_not_found(self, tmp_path):
+        (tmp_path / "Preferences.md").unlink()
+        with pytest.raises(FileNotFoundError):
+            vault_writer.write_preferences(self.PREFERENCES)
+
+
 class TestWriteToLog:
     @pytest.fixture(autouse=True)
     def create_log_file(self, tmp_path):

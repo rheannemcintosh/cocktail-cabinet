@@ -9,11 +9,12 @@ Chain:
     1. Read vault — pantry, preferences, cocktail log
     2. Map mood to flavour profile
     3. Pass pantry + flavour profile to the bartender agent
-    4. Pass bartender suggestions to the shopper agent
-    5. Format agent output as markdown for the vault
+    4. Pass bartender suggestions to the taste agent (filter + boost)
+    5. Pass taste output to the shopper agent
+    6. Format agent output as markdown for the vault
 """
 from src import agents
-from src.agents import bartender, shopper
+from src.agents import bartender, shopper, taste
 from src.mood import map_mood_to_flavour
 from src.tools.vault_reader import read_cocktail_log, read_pantry, read_preferences
 
@@ -123,8 +124,9 @@ def run(mood: str) -> str:
     1. Read pantry, preferences, and cocktail log from the vault.
     2. Map the mood to a structured flavour profile via Gemini.
     3. Pass pantry and flavour profile to the bartender agent.
-    4. Pass bartender suggestions to the shopper agent.
-    5. Format the agents' structured output as markdown.
+    4. Pass bartender suggestions to the taste agent (filter + boost).
+    5. Pass taste output to the shopper agent.
+    6. Format the agents' structured output as markdown.
 
     Args:
         mood: A free-text mood description from the user, e.g. "refreshing".
@@ -143,8 +145,26 @@ def run(mood: str) -> str:
     # Step 3: Bartender agent — ranked cocktail suggestions
     suggestions = bartender.suggest(pantry, flavour_profile)
 
-    # Step 4: Shopper agent — classify missing ingredients and rank stock-up list
+    # Step 4: Taste agent — filter disliked suggestions and boost by past ratings
+    suggestions = taste.filter_and_boost(suggestions, preferences, cocktail_log)
+
+    # Step 5: Shopper agent — classify missing ingredients and rank stock-up list
     shopping = shopper.suggest(suggestions)
 
-    # Step 5: Format for vault
+    # Step 6: Format for vault
     return _format_suggestions(suggestions, mood) + "\n" + _format_shopping_list(shopping)
+
+
+def update_preferences() -> str:
+    """Infer taste patterns from the cocktail log and update Preferences.md.
+
+    Reads the current cocktail log and preferences from the vault, then
+    calls the taste agent to identify patterns from ratings and merge any
+    new inferences into Preferences.md.
+
+    Returns:
+        A summary string describing what was inferred and updated.
+    """
+    preferences = read_preferences()
+    cocktail_log = read_cocktail_log()
+    return taste.infer_and_update(cocktail_log, preferences)
