@@ -111,3 +111,33 @@ class TestReadCocktailLog:
         monkeypatch.setattr(vault_reader, "OBSIDIAN_VAULT_PATH", "/nonexistent")
         with pytest.raises(FileNotFoundError):
             vault_reader.read_cocktail_log()
+
+
+class TestReadSuggestions:
+    def test_parses_names_from_numbered_headings(self, tmp_path, monkeypatch):
+        (tmp_path / "Cocktail Suggestions.md").write_text(
+            "# Cocktail Suggestions\n\n### 1. Gin & Tonic\n### 2. Daiquiri\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(vault_reader, "OBSIDIAN_VAULT_PATH", str(tmp_path))
+        assert vault_reader.read_suggestions() == ["Gin & Tonic", "Daiquiri"]
+
+    def test_strips_badge_suffix(self, tmp_path, monkeypatch):
+        (tmp_path / "Cocktail Suggestions.md").write_text(
+            "### 1. Gin & Tonic ⭐ Best match\n### 2. Daiquiri\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(vault_reader, "OBSIDIAN_VAULT_PATH", str(tmp_path))
+        assert vault_reader.read_suggestions() == ["Gin & Tonic", "Daiquiri"]
+
+    def test_returns_empty_list_when_file_missing(self, monkeypatch):
+        monkeypatch.setattr(vault_reader, "OBSIDIAN_VAULT_PATH", "/nonexistent")
+        assert vault_reader.read_suggestions() == []
+
+    def test_returns_empty_list_when_no_suggestion_headings(self, tmp_path, monkeypatch):
+        (tmp_path / "Cocktail Suggestions.md").write_text(
+            "# Cocktail Suggestions\n\n_Nothing here yet._\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(vault_reader, "OBSIDIAN_VAULT_PATH", str(tmp_path))
+        assert vault_reader.read_suggestions() == []

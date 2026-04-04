@@ -13,14 +13,18 @@ from src.main import main
 MOCK_MARKDOWN = "# Cocktail Suggestions\n\nGin & Tonic"
 MOCK_CONFIRMATION = "Cocktail suggestions written to /fake/vault/Cocktail Suggestions.md"
 MOCK_PREFERENCE_SUMMARY = "No new taste patterns inferred — preferences unchanged."
+MOCK_SUGGESTIONS = ["Gin & Tonic", "Daiquiri", "Mojito"]
+MOCK_LOG_CONFIRMATION = "Entry added to Cocktail Log.md"
 
 
 @pytest.fixture(autouse=True)
 def mock_pipeline(mocker):
-    """Mock orchestrator and vault writer for all tests."""
+    """Mock orchestrator, vault reader, and vault writer for all tests."""
     mocker.patch("src.orchestrator.run", return_value=MOCK_MARKDOWN)
     mocker.patch("src.orchestrator.update_preferences", return_value=MOCK_PREFERENCE_SUMMARY)
     mocker.patch("src.tools.vault_writer.write_suggestion", return_value=MOCK_CONFIRMATION)
+    mocker.patch("src.tools.vault_reader.read_suggestions", return_value=[])
+    mocker.patch("src.tools.vault_writer.write_to_log", return_value=MOCK_LOG_CONFIRMATION)
 
 
 class TestMain:
@@ -93,3 +97,51 @@ class TestMain:
         with pytest.raises(SystemExit):
             main()
         assert "Configuration error" in capsys.readouterr().out
+
+
+class TestPromptToLog:
+    @pytest.fixture(autouse=True)
+    def with_suggestions(self, mocker):
+        mocker.patch("src.tools.vault_reader.read_suggestions", return_value=MOCK_SUGGESTIONS)
+        mocker.patch("sys.argv", ["main", "--mood", "refreshing"])
+
+    def test_skip_on_empty_input_does_not_call_write_to_log(self, mocker):
+        mocker.patch("builtins.input", return_value="")
+        main()
+        import src.tools.vault_writer
+        src.tools.vault_writer.write_to_log.assert_not_called()
+
+    def test_valid_selection_calls_write_to_log(self, mocker):
+        mocker.patch("builtins.input", side_effect=["1", "4", "Delicious"])
+        main()
+        import src.tools.vault_writer
+        src.tools.vault_writer.write_to_log.assert_called_once_with("Gin & Tonic", 4, "Delicious")
+
+    def test_valid_selection_with_empty_notes_passes_empty_string(self, mocker):
+        mocker.patch("builtins.input", side_effect=["2", "3", ""])
+        main()
+        import src.tools.vault_writer
+        src.tools.vault_writer.write_to_log.assert_called_once_with("Daiquiri", 3, "")
+
+    def test_out_of_range_selection_does_not_call_write_to_log(self, mocker):
+        mocker.patch("builtins.input", return_value="99")
+        main()
+        import src.tools.vault_writer
+        src.tools.vault_writer.write_to_log.assert_not_called()
+
+    def test_non_numeric_selection_does_not_call_write_to_log(self, mocker):
+        mocker.patch("builtins.input", return_value="abc")
+        main()
+        import src.tools.vault_writer
+        src.tools.vault_writer.write_to_log.assert_not_called()
+
+    def test_prints_log_confirmation_after_valid_selection(self, mocker, capsys):
+        mocker.patch("builtins.input", side_effect=["1", "5", ""])
+        main()
+        assert MOCK_LOG_CONFIRMATION in capsys.readouterr().out
+
+    def test_no_suggestions_skips_prompt(self, mocker):
+        mocker.patch("src.tools.vault_reader.read_suggestions", return_value=[])
+        mock_input = mocker.patch("builtins.input")
+        main()
+        mock_input.assert_not_called()
